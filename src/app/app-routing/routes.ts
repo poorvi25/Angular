@@ -8,6 +8,7 @@ import { ContactComponent } from '../contact/contact.component';
 
 export const routes: Routes = [
   { path: 'home',  component: HomeComponent },
+  { path: 'aboutus',     component: AboutComponent },
   { path: 'menu',     component: MenuComponent },
   //route parameter
   {path: 'dishdetail/:id', component: DishdetailComponent},
