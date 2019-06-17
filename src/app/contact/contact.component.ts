@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+//view child give access to dom child
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from'@angular/forms';
 import { Feedback, ContactType } from '../shared/feedback';
 
@@ -15,7 +16,9 @@ export class ContactComponent implements OnInit {
    //data-model variable
    feedback: Feedback;
    contactType = ContactType;
-
+    
+   //form reset to its intial value
+    @ViewChild('fform') feedbackFormDirective;
    //inject formbuilder to make use
   constructor(private fb: FormBuilder) { 
 
@@ -29,10 +32,10 @@ export class ContactComponent implements OnInit {
  //creating reactive form which would inject in feedback form
   createForm(){
    this.feedbackForm = this.fb.group({
-     firstname:'',
-     lastname: '',
-     telnum: 0,
-     email: '',
+     firstname:['', Validators.required],
+     lastname: ['', Validators.required],
+     telnum: [0, Validators.required],
+     email:  ['', Validators.required],
      agree: false,
      contacttype: 'None',
      message: ''
@@ -47,6 +50,16 @@ export class ContactComponent implements OnInit {
 
 
     //reset form after submit
-    this.feedbackForm.reset();
+    this.feedbackForm.reset({
+      firstname: '',
+      lastname: '',
+      telnum: 0,
+      email: '',
+     agree: false,
+     contacttype: 'None',
+     message: ''
+
+    });
+    this.feedbackFormDirective.resetForm();
   }
 }
