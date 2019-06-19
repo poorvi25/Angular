@@ -13,7 +13,13 @@ export class MenuComponent implements OnInit {
   constructor(private dishService : DishService) { }
 
   ngOnInit() {
-    this.dishes = this.dishService.getDishes();
+    //dishes is not a dish array now it is js object so it will have then method
+    //this.dishes = this.dishService.getDishes();
+
+
+    //then returning dishes obj, then take as parameter
+    this.dishService.getDishes()
+    .then((dishes => this.dishes = dishes));
   }
   onSelect(dish:Dish){
     this.selectedDish = dish;
