@@ -17,9 +17,10 @@ export class MenuComponent implements OnInit {
     //this.dishes = this.dishService.getDishes();
 
 
-    //then returning dishes obj, then take as parameter
+    //then returning dishes obj, then take as parameter 
+    //we are using observable instead a promise so now we use subscribe instead then 
     this.dishService.getDishes()
-    .then((dishes => this.dishes = dishes));
+    .subscribe((dishes => this.dishes = dishes));
   }
   onSelect(dish:Dish){
     this.selectedDish = dish;
