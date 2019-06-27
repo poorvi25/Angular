@@ -19,6 +19,37 @@ export class ContactComponent implements OnInit {
     
    //form reset to its intial value
     @ViewChild('fform') feedbackFormDirective;
+     
+    //js object to contain all kinds of error
+    //string containing msg corresponding error will be added here
+    formErrors = {
+      'firstname':'',
+      'lastname':'',
+      'telnum':'',
+      'email':''
+    };
+   
+    //set of error messages
+   validationMessages = {
+     'firstname':{
+       'required': 'First name is required',
+       'minlength': 'First name must be 2 characters long',
+       'maxlength': 'First name cannot be more than 25 character'
+     },
+     'lastname':{
+      'required': 'Last name is required',
+      'minlength': 'Last name must be 2 characters long',
+      'maxlength': 'Last name cannot be more than 25 character'
+     },
+     'telnum':{
+       'required': 'Tel. number is required.',
+       'pattern': 'Tel. number must contain only numbers.'
+     },
+     'email':{
+      'required': 'Email is required.',
+      'email': 'Email not in valid format.'
+     }
+   };
    //inject formbuilder to make use
   constructor(private fb: FormBuilder) { 
 
@@ -32,15 +63,50 @@ export class ContactComponent implements OnInit {
  //creating reactive form which would inject in feedback form
   createForm(){
    this.feedbackForm = this.fb.group({
-     firstname:['', Validators.required],
-     lastname: ['', Validators.required],
-     telnum: [0, Validators.required],
-     email:  ['', Validators.required],
+     //if we have more then 1 validators enclose them in an array
+     firstname:['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)]],
+     lastname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(25)]],
+     telnum: [0, [Validators.required, Validators.pattern] ],
+     email:  ['', [Validators.required, Validators.email] ],
      agree: false,
      contacttype: 'None',
      message: ''
 
    });
+
+   this.feedbackForm.valueChanges
+   .subscribe(data => this.onValueChanged(data));
+
+   this.onValueChanged(); //(re)set form validation messages
+  }
+
+  //data? means parameter can or cannot be passed
+  onValueChanged(data?: any){
+    //if nothing in form
+    if(!this.feedbackForm){ return; }
+    const form = this.feedbackForm;
+    //field take formError object having 4 fields
+    for(const field in this.formErrors){
+      //checking form fields 
+    if(this.formErrors.hasOwnProperty(field)) {
+        // clear previous error if any
+    this.formErrors[field] = '';
+        //access the form field 
+    const control = form.get(field);
+      //if field is dirty,valid and have control
+    if(control && control.dirty && !control.valid){
+          //picking messages corresponding to form fields
+    const messages = this.validationMessages[field];
+          //checking if any error
+    for(const key in control.errors){
+            if(control.errors.hasOwnProperty(key)){
+              //whatever form error msgs attach to that field
+              this.formErrors[field] += messages[key] + ' ';
+            }
+          }
+        }
+      }
+    }
   }
 
   onSubmit() {
