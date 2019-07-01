@@ -31,6 +31,8 @@ export class DishdetailComponent implements OnInit {
      commentForm : FormGroup;
      //data-model variable
      comment: Comment;
+     //hold copy of modified dish
+     dishcopy: Dish;
     //form reset to its intial value
     @ViewChild('cform') commentFormDirective;
     formErrors = {
@@ -59,7 +61,7 @@ export class DishdetailComponent implements OnInit {
     //then it subscribe to get dish to get variable
     this.route.params
       .pipe(switchMap((params: Params) => this.dishservice.getDish(params['id']))) //fetch id
-      .subscribe(dish => {this.dish = dish; this.setPrevNext(dish.id)},
+      .subscribe(dish => {this.dish = dish; this.dishcopy = dish; this.setPrevNext(dish.id)},
        errmess => this.errMess = <any>errmess ); //fetch dish from id
   }
   //to navigate other we need to know its previous id, dishid is current dish
@@ -119,7 +121,14 @@ onValueChanged(data?: any){
 onSubmit() {
   this.comment=this.commentForm.value;
   this.comment.date = new Date().toISOString();
-  this.dish.comments.push(this.comment);
+  this.dishcopy.comments.push(this.comment);
+  //sending updated dishcopy
+  this.dishservice.putDish(this.dishcopy)
+  //when server replies
+  .subscribe(dish => {
+   this.dish = dish; this.dishcopy = dish;
+  },
+  errmess => { this.dish = null; this.dishcopy = null; this.errMess = <any>errmess});
   console.log(this.comment);
   this.comment=null;
 
