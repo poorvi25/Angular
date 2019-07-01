@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject} from '@angular/core';
 import { Dish } from '../shared/dish';
 import { DishService } from '../services/dish.service';
 @Component({
@@ -9,8 +9,11 @@ import { DishService } from '../services/dish.service';
 export class MenuComponent implements OnInit {
   
   dishes: Dish[];
-  selectedDish: Dish;
-  constructor(private dishService : DishService) { }
+  //when observable throw error it return error msg
+  errMess: string;
+  constructor(private dishService : DishService,
+    //baseurl is provided as provider
+    @Inject('BaseURL') private BaseURL) { }
 
   ngOnInit() {
     //dishes is not a dish array now it is js object so it will have then method
@@ -20,9 +23,8 @@ export class MenuComponent implements OnInit {
     //then returning dishes obj, then take as parameter 
     //we are using observable instead a promise so now we use subscribe instead then 
     this.dishService.getDishes()
-    .subscribe((dishes => this.dishes = dishes));
+    .subscribe((dishes) => this.dishes = dishes,
+      errmess => this.errMess = <any>errmess);
   }
-  onSelect(dish:Dish){
-    this.selectedDish = dish;
-  }
+
 }
